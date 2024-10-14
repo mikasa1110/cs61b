@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author mikasa
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -109,16 +109,75 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-
+        if (side!=Side.NORTH) {
+            this.board.setViewingPerspective(side);
+        }
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        if (!emptySpaceExists(this.board)) {
+            return changed;
+        }
+        // board. move(int col, int row, Tile tile) 判断会不会merge,true merge
+        // 从上向下遍历
+        int size = this.board.size();
+        int newRow;
+        boolean isMerge;
+        Tile curTile;
+        int curValue;
+        int Merges;
+        for (int j = 0;j<size;j++) {
+                Merges = 0;
+            for (int i = size-2;i>=0;i--) {
+                newRow = getNewRow(i,j,Merges);
+                if (newRow!=-1) {
+                    curTile = this.board.tile(j,i);
+                    curValue  = curTile.value();
+                    isMerge = this.board.move(j,newRow,curTile);
+                    if (isMerge) {
+                        this.score += 2*curValue;
+                        Merges = Merges | 1<<newRow;
+                    }
+                    changed = true;
+                }
+            }
+        }
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
+        if (side!=Side.NORTH) {
+            this.board.setViewingPerspective(Side.NORTH);
+        }
         return changed;
+    }
+
+    public  int getNewRow(int row,int col,int Merges) {
+        if (this.board.tile(col,row)==null) {
+            return -1;
+        }
+        int size = this.board.size();
+        // 当前的不是null，需要移动可能
+        int newRow = -1;
+        int value = this.board.tile(col,row).value();
+        for (int i=size-1;i>=0;i--) {
+            if (this.board.tile(col,i)==null || this.board.tile(col,i).value()==value &&  (Merges>>i&1)!=1) {
+                newRow = i;
+                return newRow;
+            }
+        }
+        return newRow;
+    }
+    public void printBoard() {
+        int size = this.board.size();
+        for (int i=0;i<size;i++) {
+            for (int j=0;j<size;j++) {
+                if (this.board.tile(j,i)!=null) {
+                    System.out.print(String.format("On row %d col %d has",i,j )+ this.board.tile(j,i).value() + "\n");
+                }
+            }
+        }
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -138,6 +197,16 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        // check are there empty spaces
+        // b.tile() Returns null if there is no tile there
+        int size = b.size();
+        for (int i = 0;i < size; i++) {
+            for (int j = 0; j< size; j++) {
+                if (b.tile(i,j) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,6 +217,14 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        int size = b.size();
+        for (int i = 0;i < size; i++) {
+            for (int j = 0; j< size; j++) {
+                if (b.tile(i,j)!= null && b.tile(i,j).value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,6 +236,28 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        // check are there two adjacent tiles with the same value
+        int size = b.size();
+        for (int i = 0;i < size; i++) {
+            for (int j = 0; j< size; j++) {
+                // left,right upper lower
+                if (i>0 && b.tile(i,j).value()==b.tile(i-1,j).value()) {
+                    return true;
+                }
+                if (i<size-1 && b.tile(i,j).value()==b.tile(i+1,j).value()) {
+                    return true;
+                }
+                if (j>0 && b.tile(i,j).value()==b.tile(i,j-1).value()) {
+                    return true;
+                }
+                if (j<size-1 && b.tile(i,j).value()==b.tile(i,j+1).value()) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
