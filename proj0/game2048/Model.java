@@ -161,10 +161,17 @@ public class Model extends Observable {
         // 当前的不是null，需要移动可能
         int newRow = -1;
         int value = this.board.tile(col,row).value();
-        for (int i=size-1;i>=0;i--) {
-            if (this.board.tile(col,i)==null || this.board.tile(col,i).value()==value &&  (Merges>>i&1)!=1) {
-                newRow = i;
-                return newRow;
+        // 从当前行向上检查，确保只与相邻的tile合并
+        for (int i = row + 1; i < size; i++) {
+            Tile targetTile = this.board.tile(col, i);
+
+            if (targetTile == null) {
+                newRow = i;  // 目标位置为空，可以移动到该位置
+            } else if (targetTile.value() == value && (Merges >> i & 1) != 1) {
+                newRow = i;  // 找到相同值且未合并的目标位置，可以合并
+                break;
+            } else {
+                break;  // 如果遇到非空且不同值的tile，停止查找
             }
         }
         return newRow;
