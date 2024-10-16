@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque <T> implements Iterable<T> {
+public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
     private T[] array;
     private int head;
     private int tail;
@@ -21,9 +21,7 @@ public class ArrayDeque <T> implements Iterable<T> {
         // tail....head ....
         return size;
     }
-    public boolean isEmpty() {
-        return size == 0;
-    }
+
 
     public void addFirst(T item) {
         // head是当前有效的 所以
