@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque <T> {
+public class ArrayDeque <T> implements Iterable<T> {
     private T[] array;
     private int head;
     private int tail;
@@ -42,7 +42,7 @@ public class ArrayDeque <T> {
             incSize();
         }
     }
-    public void incSize() {
+    private void incSize() {
         int newArraySize = (int)Math.round(arraySize*1.25);
         if (head<tail) {
             T[] temp = (T[]) new Object[newArraySize];
@@ -111,14 +111,14 @@ public class ArrayDeque <T> {
         }
         return null;
     }
-    public T getFirst() {
+    private T getFirst() {
         if (!isEmpty()) {
             return array[head];
         }
         return null;
     }
 
-    public T getLast() {
+    private T getLast() {
         if (!isEmpty()) {
             return array[(tail-1+arraySize)%arraySize];
         }
@@ -140,7 +140,7 @@ public class ArrayDeque <T> {
         return null;
     }
 
-    public void decSize() {
+    private void decSize() {
         int newArraySize = (int)Math.round(arraySize*0.25);
         if (head<tail) {
             T[] temp = (T[]) new Object[newArraySize];
@@ -159,21 +159,27 @@ public class ArrayDeque <T> {
             arraySize = newArraySize;
         }
     }
-
+    @Override
+    public Iterator<T> iterator() {
+        return new Itr();
+        //
+    }
     private class Itr implements Iterator<T> {
-        int cursor;
+        int cursor = head;
         int lastRet= -1;
 
         Itr() {}
 
+        @Override
         public boolean hasNext() {
-            return cursor != size;
+            return cursor != tail;
         }
 
+        @Override
         public T next() {
             if (hasNext()) {
                 lastRet = cursor;
-                cursor++;
+                cursor = (cursor+1)%arraySize;
                 return array[lastRet];
             }
             return null;

@@ -55,9 +55,9 @@ public class ArrayDequeTest {
             } else if (choice==1) {
                 deque.addFirst(i);
             } else if (choice==2 && !deque.isEmpty()) {
-                assertEquals(deque.getFirst(),deque.removeFirst());
+                deque.removeFirst();
             } else if (choice==3 && !deque.isEmpty()) {
-                assertEquals(deque.getLast(),deque.removeLast());
+                deque.removeLast();
             } else if (choice==4) {
                 deque.get(StdRandom.uniform(0,deque.size()+5));
             }
