@@ -69,11 +69,15 @@ public class ArrayDequeTest {
         ArrayDeque<Integer> deque = new ArrayDeque<>();
         ArrayDeque<Integer> deque2 = new ArrayDeque<>();
         ArrayDeque<Double> deque3 = new ArrayDeque<>();
+        LinkedListDeque<Integer> deque4 = new LinkedListDeque<>();
         deque2.addLast(1);
         deque2.addLast(2);
         deque.addLast(1);
         deque.addLast(2);
         deque.addLast(3);
+        deque4.addLast(1);
+        deque4.addLast(2);
+        assertEquals(deque2, deque4);
         assertNotEquals(deque, deque2);
         assertNotEquals(deque, deque3);
         assertNotEquals(deque2, deque3);

@@ -9,7 +9,7 @@ public class ArrayDeque<T> implements Iterable<T>, deque.Deque<T> {
     private int arraySize;
     private int size;
     private static final int DECBOUND = 16;
-
+    private static final double INCFACTOR = 1.25;
     public ArrayDeque() {
         array = (T[]) new Object[8];
         head = -1;
@@ -43,8 +43,8 @@ public class ArrayDeque<T> implements Iterable<T>, deque.Deque<T> {
     }
 
     private void incSize() {
-        double incFactor = 1.25;
-        int newArraySize = (int) Math.round(arraySize * incFactor);
+
+        int newArraySize = (int) Math.round(arraySize * INCFACTOR);
         if (head < tail) {
             T[] temp = (T[]) new Object[newArraySize];
             System.arraycopy(array, head, temp, 0, arraySize);
@@ -197,15 +197,20 @@ public class ArrayDeque<T> implements Iterable<T>, deque.Deque<T> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ArrayDeque)) return false;
+        if (!(o instanceof deque.Deque)) {
+            return false;
+        }
 
-        ArrayDeque<?> other = (ArrayDeque<?>) o;
-        if (this.size() != other.size()) return false;
-
-        for (int i = 0; i < this.size(); i++) {
-            T thisElement = this.get(i);
-            Object otherElement = other.get(i);
-            if (!thisElement.equals(otherElement)) return false;
+        deque.Deque<?> other = (deque.Deque<?>) o;
+        if (this.size() != other.size()) {
+            return false;
+        }
+        Iterator<T> thisIterator = this.iterator();
+        Iterator<?> otherIterator = other.iterator();
+        while (thisIterator.hasNext() && otherIterator.hasNext()) {
+            if (!thisIterator.next().equals(otherIterator.next())) {
+                return false;
+            }
         }
         return true;
     }

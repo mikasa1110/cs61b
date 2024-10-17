@@ -9,7 +9,7 @@ public class LinkedListDeque<T> implements Iterable<T>, deque.Deque<T> {
         private Node<T> next;
         private Node<T> prev;
 
-        public Node(T val, Node<T> next, Node<T> prev) {
+        Node(T val, Node<T> next, Node<T> prev) {
             this.val = val;
             this.next = next;
             this.prev = prev;
@@ -119,6 +119,7 @@ public class LinkedListDeque<T> implements Iterable<T>, deque.Deque<T> {
         private Node<T> tmp = head.next;
         int cursor;
         int lastRet = -1;
+        T lastVal;
 
         Itr() {
         }
@@ -132,9 +133,10 @@ public class LinkedListDeque<T> implements Iterable<T>, deque.Deque<T> {
         public T next() {
             if (hasNext()) {
                 lastRet = cursor;
+                lastVal = tmp.val;
                 cursor++;
                 tmp = tmp.next;
-                return tmp.val;
+                return lastVal;
             }
             return null;
         }
@@ -142,12 +144,20 @@ public class LinkedListDeque<T> implements Iterable<T>, deque.Deque<T> {
 
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof LinkedListDeque)) return false;
-        LinkedListDeque<?> other = (LinkedListDeque<?>) o;
-        if (this.size() != other.size()) return false;
-        for (int i = 0; i < this.size(); i++) {
-            if (!this.get(i).equals(other.get(i))) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof deque.Deque)) {
+            return false;
+        }
+        deque.Deque<?> other = (deque.Deque<?>) o;
+        if (this.size() != other.size()) {
+            return false;
+        }
+        Iterator<T> thisIterator = this.iterator();
+        Iterator<?> otherIterator = other.iterator();
+        while (thisIterator.hasNext() && otherIterator.hasNext()) {
+            if (!thisIterator.next().equals(otherIterator.next())) {
                 return false;
             }
         }
