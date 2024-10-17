@@ -48,19 +48,48 @@ public class ArrayDequeTest {
         ArrayDeque<Integer> deque = new ArrayDeque<>();
         int N = 10000000;
         for (int i = 0; i < N; i++) {
-            int choice = StdRandom.uniform(0,5);
+            int choice = StdRandom.uniform(0, 5);
             // addFirst addTail, removeLast,removeTail
-            if (choice==0) {
+            if (choice == 0) {
                 deque.addLast(i);
-            } else if (choice==1) {
+            } else if (choice == 1) {
                 deque.addFirst(i);
-            } else if (choice==2 && !deque.isEmpty()) {
+            } else if (choice == 2 && !deque.isEmpty()) {
                 deque.removeFirst();
-            } else if (choice==3 && !deque.isEmpty()) {
+            } else if (choice == 3 && !deque.isEmpty()) {
                 deque.removeLast();
-            } else if (choice==4) {
-                deque.get(StdRandom.uniform(0,deque.size()+5));
+            } else if (choice == 4) {
+                deque.get(StdRandom.uniform(0, deque.size() + 5));
             }
+        }
+    }
+
+    @Test
+    public void equalTest() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+        ArrayDeque<Integer> deque2 = new ArrayDeque<>();
+        ArrayDeque<Double> deque3 = new ArrayDeque<>();
+        deque2.addLast(1);
+        deque2.addLast(2);
+        deque.addLast(1);
+        deque.addLast(2);
+        deque.addLast(3);
+        assertNotEquals(deque, deque2);
+        assertNotEquals(deque, deque3);
+        assertNotEquals(deque2, deque3);
+        assertEquals(deque, deque);
+        deque.removeLast();
+        assertEquals(deque, deque2);
+    }
+
+    @Test
+    public void iteratorTest() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+        deque.addLast(1);
+        deque.addLast(2);
+        deque.addLast(3);
+        for (int i = 0; i < deque.size(); i++) {
+            assertEquals((int)deque.get(i), i+1);
         }
     }
 }

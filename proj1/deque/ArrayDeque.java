@@ -2,12 +2,14 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
+public class ArrayDeque<T> implements Iterable<T>, deque.Deque<T> {
     private T[] array;
     private int head;
     private int tail;
     private int arraySize;
     private int size;
+    private static final int DECBOUND = 16;
+
     public ArrayDeque() {
         array = (T[]) new Object[8];
         head = -1;
@@ -24,37 +26,37 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
 
 
     public void addFirst(T item) {
-        // head是当前有效的 所以
+        // head是当前有效的
         if (head == -1) {
             array[0] = item;
-            tail+=1;
-            head+=1;
-            size+=1;
+            tail += 1;
+            head += 1;
+            size += 1;
+        } else {
+            array[(head - 1 + arraySize) % arraySize] = item;
+            head = (head - 1 + arraySize) % arraySize;
+            size += 1;
         }
-        else {
-            array[(head-1+arraySize)%arraySize] = item;
-            head = (head-1+arraySize)%arraySize;
-            size+=1;
-        }
-        if  (head == tail) {
+        if (head == tail) {
             incSize();
         }
     }
+
     private void incSize() {
-        int newArraySize = (int)Math.round(arraySize*1.25);
-        if (head<tail) {
+        double incFactor = 1.25;
+        int newArraySize = (int) Math.round(arraySize * incFactor);
+        if (head < tail) {
             T[] temp = (T[]) new Object[newArraySize];
             System.arraycopy(array, head, temp, 0, arraySize);
             array = temp;
             head = 0;
             tail = size;
             arraySize = newArraySize;
-        }
-        else {
+        } else {
             T[] temp = (T[]) new Object[newArraySize];
             // tail....head...end
-            System.arraycopy(array,head,temp,0,arraySize-head);
-            System.arraycopy(array,0,temp,arraySize-head,tail);
+            System.arraycopy(array, head, temp, 0, arraySize - head);
+            System.arraycopy(array, 0, temp, arraySize - head, tail);
             array = temp;
             head = 0;
             tail = size;
@@ -64,29 +66,29 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
 
     public void addLast(T item) {
         // tail永远是下一个
-        if (head==-1) {
-            head+=1;
+        if (head == -1) {
+            head += 1;
         }
         array[tail] = item;
-        tail = (tail+1)%arraySize;
-        size+=1;
-        if (head == tail || tail==arraySize) {
+        tail = (tail + 1) % arraySize;
+        size += 1;
+        if (head == tail || tail == arraySize) {
             incSize();
         }
     }
 
     public T removeFirst() {
         if (!isEmpty()) {
-            //
+
             T value = array[head];
-            size-=1;
-            if (size==0) {
+            size -= 1;
+            if (size == 0) {
                 head = -1;
                 tail = 0;
             } else {
-                head = (head+1)%arraySize;
+                head = (head + 1) % arraySize;
             }
-            if (arraySize>=16 && size< Math.round(arraySize/4)) {
+            if (arraySize >= DECBOUND && size < Math.round(arraySize / 4)) {
                 decSize();
             }
 
@@ -98,10 +100,10 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
     public T removeLast() {
         if (!isEmpty()) {
             // tail是下一个
-            T value = array[(tail-1+arraySize)%arraySize];
-            tail = (tail-1+arraySize)%arraySize;
-            size-=1;
-            if (arraySize>=16 && size<Math.round(arraySize/4)) {
+            T value = array[(tail - 1 + arraySize) % arraySize];
+            tail = (tail - 1 + arraySize) % arraySize;
+            size -= 1;
+            if (arraySize >= DECBOUND && size < Math.round(arraySize / 4)) {
                 decSize();
             }
             return value;
@@ -109,6 +111,7 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
         }
         return null;
     }
+
     private T getFirst() {
         if (!isEmpty()) {
             return array[head];
@@ -118,29 +121,31 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
 
     private T getLast() {
         if (!isEmpty()) {
-            return array[(tail-1+arraySize)%arraySize];
+            return array[(tail - 1 + arraySize) % arraySize];
         }
         return null;
     }
+
     public void printDeque() {
         int start = head;
         while (start != tail) {
             System.out.println(array[head] + " ");
-            head = (head+1)%arraySize;
+            head = (head + 1) % arraySize;
         }
         System.out.println();
     }
+
     public T get(int index) {
-        if (index>=0 && index<size) {
-            int realIndex = (head+index)%arraySize;
+        if (index >= 0 && index < size) {
+            int realIndex = (head + index) % arraySize;
             return array[realIndex];
         }
         return null;
     }
 
     private void decSize() {
-        int newArraySize = (int)Math.round(arraySize*0.25);
-        if (head<tail) {
+        int newArraySize = (int) Math.round(arraySize * 0.25);
+        if (head < tail) {
             T[] temp = (T[]) new Object[newArraySize];
             System.arraycopy(array, head, temp, 0, size);
             array = temp;
@@ -149,35 +154,38 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
             arraySize = newArraySize;
         } else {
             T[] temp = (T[]) new Object[newArraySize];
-            System.arraycopy(array,head,temp,0,arraySize-head);
-            System.arraycopy(array,0,temp,arraySize-head,tail);
+            System.arraycopy(array, head, temp, 0, arraySize - head);
+            System.arraycopy(array, 0, temp, arraySize - head, tail);
             array = temp;
             head = 0;
             tail = size;
             arraySize = newArraySize;
         }
     }
+
     @Override
     public Iterator<T> iterator() {
         return new Itr();
         //
     }
+
     private class Itr implements Iterator<T> {
         int cursor = head;
-        int lastRet= -1;
+        int lastRet = -1;
 
-        Itr() {}
+        Itr() {
+        }
 
         @Override
         public boolean hasNext() {
-            return cursor != tail;
+            return cursor != tail && cursor != -1;
         }
 
         @Override
         public T next() {
             if (hasNext()) {
                 lastRet = cursor;
-                cursor = (cursor+1)%arraySize;
+                cursor = (cursor + 1 + arraySize) % arraySize;
                 return array[lastRet];
             }
             return null;
@@ -185,16 +193,20 @@ public class ArrayDeque <T> implements Iterable<T>, Deque<T> {
     }
 
 
-
     public boolean equals(Object o) {
-        if (o instanceof ArrayDeque && ((ArrayDeque<?>) o).size == this.size) {
-            for (int i = 0; i < this.size; i++) {
-                if (this.get(i) != ((ArrayDeque<?>) o).get(i)) {
-                    return false;
-                }
-            }
+        if (this == o) {
             return true;
         }
-        return false;
+        if (!(o instanceof ArrayDeque)) return false;
+
+        ArrayDeque<?> other = (ArrayDeque<?>) o;
+        if (this.size() != other.size()) return false;
+
+        for (int i = 0; i < this.size(); i++) {
+            T thisElement = this.get(i);
+            Object otherElement = other.get(i);
+            if (!thisElement.equals(otherElement)) return false;
+        }
+        return true;
     }
 }

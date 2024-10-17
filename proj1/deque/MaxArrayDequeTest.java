@@ -22,5 +22,13 @@ public class MaxArrayDequeTest {
         maxArrayDeque.addFirst(15);
         int a = maxArrayDeque.max();
         assertEquals(15,a);
+        Comparator<Integer> integerComparator2 = new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2 - o1;
+            }
+        };
+        int b = maxArrayDeque.max(integerComparator2);
+        assertEquals(12,b);
     }
 }

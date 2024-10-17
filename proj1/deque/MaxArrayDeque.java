@@ -2,19 +2,11 @@ package deque;
 
 import java.util.Comparator;
 
-public class MaxArrayDeque<T> extends ArrayDeque<T> implements Deque<T> {
-//    private T[] array;
-//    private int head;
-//    private int tail;
-//    private int arraySize;
-//    private int size;
+public class MaxArrayDeque<T> extends ArrayDeque<T> implements deque.Deque<T> {
+
     private Comparator<T> comparator;
     public MaxArrayDeque(Comparator<T> c) {
-//        array = (T[]) new Object[8];
-//        head = -1;
-//        tail = 0;
-//        arraySize = 8;
-//        size = 0;
+
         comparator = c;
     }
 
@@ -41,7 +33,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> implements Deque<T> {
         for (T element:this) {
             if (max == null) {
                 max = element;
-            }  else if (comparator.compare(max, element) < 0) {
+            }  else if (c.compare(max, element) < 0) {
                 max = element;
             }
         }
