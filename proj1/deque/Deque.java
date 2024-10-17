@@ -14,5 +14,5 @@ public interface Deque<T> {
     T removeLast();
     T get(int index);
 
-    Iterator<?> iterator();
+    Iterator<T> iterator();
 }
